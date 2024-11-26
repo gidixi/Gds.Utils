@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35312.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gds.Utils.Csv", "Gds.Utils.Csv\Gds.Utils.Csv.csproj", "{22C84A21-2552-4ACA-9142-7E72A4E998DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gds.Utilis.Csv.Test", "Gds.Utilis.Csv.Test\Gds.Utilis.Csv.Test.csproj", "{11C0A39F-8D19-43BF-9285-25331383C56C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{22C84A21-2552-4ACA-9142-7E72A4E998DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22C84A21-2552-4ACA-9142-7E72A4E998DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22C84A21-2552-4ACA-9142-7E72A4E998DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22C84A21-2552-4ACA-9142-7E72A4E998DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11C0A39F-8D19-43BF-9285-25331383C56C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11C0A39F-8D19-43BF-9285-25331383C56C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11C0A39F-8D19-43BF-9285-25331383C56C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11C0A39F-8D19-43BF-9285-25331383C56C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2D4385EB-14E7-45D2-B2A6-F773F794A100}
+	EndGlobalSection
+EndGlobal
