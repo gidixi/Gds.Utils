@@ -67,3 +67,33 @@ Per utilizzare queste utility nel tuo progetto, aggiungi i seguenti pacchetti Nu
 dotnet add package CsvHelper
 dotnet add package Newtonsoft.Json
 dotnet add package Microsoft.Extensions.Logging
+```
+
+## Esempi di Uso
+Utilizzo di CsvManager<T>
+
+```csharp
+using Gds.Utils.Csv;
+using Microsoft.Extensions.Logging;
+
+var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+var logger = loggerFactory.CreateLogger<CsvManager<MyRecord>>();
+
+var csvManager = new CsvManager<MyRecord>("path/to/file.csv", logger);
+csvManager.AddRecord(new MyRecord { Id = 1, Name = "Example" });
+```
+
+
+Utilizzo di JsonKeyValueStore
+
+```csharp
+using Gds.Utilis.Json;
+using Microsoft.Extensions.Logging;
+
+var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+var logger = loggerFactory.CreateLogger<JsonKeyValueStore>();
+
+var jsonStore = new JsonKeyValueStore("path/to/file.json", logger);
+jsonStore.Set("key1", "value1");
+var value = jsonStore.Get<string>("key1");
+```
