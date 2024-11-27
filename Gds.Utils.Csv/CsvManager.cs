@@ -5,6 +5,10 @@ using System.Globalization;
 
 namespace Gds.Utils.Csv
 {
+    /// <summary>
+    /// Gestisce la lettura e la scrittura di record CSV per un tipo specifico <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">Il tipo di record da gestire.</typeparam>
     public class CsvManager<T> where T : class, new()
     {
         private readonly string _filePath;
@@ -12,6 +16,12 @@ namespace Gds.Utils.Csv
         private readonly ILogger<CsvManager<T>> _logger;
         private readonly bool _includeHeader;
 
+        /// <summary>
+        /// Inizializza una nuova istanza di <see cref="CsvManager{T}"/> con il percorso del file specificato.
+        /// </summary>
+        /// <param name="filePath">Il percorso del file CSV.</param>
+        /// <param name="logger">Il logger per registrare le operazioni.</param>
+        /// <param name="includeHeader">Indica se includere l'intestazione nel file CSV (default è true).</param>
         public CsvManager(string filePath, ILogger<CsvManager<T>> logger, bool includeHeader = true)
         {
             _filePath = filePath;
@@ -26,6 +36,9 @@ namespace Gds.Utils.Csv
             EnsureFileExists();
         }
 
+        /// <summary>
+        /// Assicura che il file CSV esista. Se non esiste, lo crea e aggiunge l'intestazione se necessario.
+        /// </summary>
         private void EnsureFileExists()
         {
             try
@@ -54,6 +67,10 @@ namespace Gds.Utils.Csv
             }
         }
 
+        /// <summary>
+        /// Legge tutti i record dal file CSV.
+        /// </summary>
+        /// <returns>Una lista di record del tipo <typeparamref name="T"/>.</returns>
         public List<T> ReadRecords()
         {
             try
@@ -71,6 +88,10 @@ namespace Gds.Utils.Csv
             }
         }
 
+        /// <summary>
+        /// Scrive una serie di record nel file CSV.
+        /// </summary>
+        /// <param name="records">La serie di record da scrivere.</param>
         public void WriteRecords(IEnumerable<T> records)
         {
             try
@@ -90,6 +111,10 @@ namespace Gds.Utils.Csv
             }
         }
 
+        /// <summary>
+        /// Aggiunge un nuovo record al file CSV.
+        /// </summary>
+        /// <param name="newRecord">Il nuovo record da aggiungere.</param>
         public void AddRecord(T newRecord)
         {
             try
@@ -106,6 +131,11 @@ namespace Gds.Utils.Csv
             }
         }
 
+        /// <summary>
+        /// Aggiorna un record esistente nel file CSV.
+        /// </summary>
+        /// <param name="predicate">La funzione per trovare il record da aggiornare.</param>
+        /// <param name="updateMethod">Il metodo per aggiornare il record trovato.</param>
         public void UpdateRecord(Func<T, bool> predicate, Action<T> updateMethod)
         {
             try
@@ -126,6 +156,10 @@ namespace Gds.Utils.Csv
             }
         }
 
+        /// <summary>
+        /// Elimina un record dal file CSV.
+        /// </summary>
+        /// <param name="predicate">La funzione per trovare il record da eliminare.</param>
         public void DeleteRecord(Func<T, bool> predicate)
         {
             try
