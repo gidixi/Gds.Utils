@@ -19,14 +19,17 @@ namespace Gds.Utilis.Json
     {
         private readonly string _filePath;
         private Dictionary<string, object> _data;
+        private readonly ILogger<JsonKeyValueStore> _logger;
 
         /// <summary>
         /// Inizializza una nuova istanza di <see cref="JsonKeyValueStore"/> con il percorso del file specificato.
         /// </summary>
         /// <param name="filePath">Il percorso del file JSON in cui verranno memorizzati i dati.</param>
-        public JsonKeyValueStore(string filePath)
+        /// <param name="logger">Il logger per registrare le operazioni.</param>
+        public JsonKeyValueStore(string filePath, ILogger<JsonKeyValueStore> logger)
         {
             _filePath = filePath;
+            _logger = logger;
             Load();
         }
 
@@ -35,14 +38,24 @@ namespace Gds.Utilis.Json
         /// </summary>
         private void Load()
         {
-            if (File.Exists(_filePath))
+            try
             {
-                string json = File.ReadAllText(_filePath);
-                _data = JsonConvert.DeserializeObject<Dictionary<string, object>>(json) ?? new Dictionary<string, object>();
+                if (File.Exists(_filePath))
+                {
+                    string json = File.ReadAllText(_filePath);
+                    _data = JsonConvert.DeserializeObject<Dictionary<string, object>>(json) ?? new Dictionary<string, object>();
+                    _logger.LogInformation("Loaded data from file: {FilePath}", _filePath);
+                }
+                else
+                {
+                    _data = new Dictionary<string, object>();
+                    _logger.LogInformation("File does not exist. Initialized new data dictionary.");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                _data = new Dictionary<string, object>();
+                _logger.LogError(ex, "Failed to load data from file: {FilePath}", _filePath);
+                throw;
             }
         }
 
@@ -51,8 +64,17 @@ namespace Gds.Utilis.Json
         /// </summary>
         private void Save()
         {
-            string json = JsonConvert.SerializeObject(_data, Newtonsoft.Json.Formatting.Indented);
-            File.WriteAllText(_filePath, json);
+            try
+            {
+                string json = JsonConvert.SerializeObject(_data, Newtonsoft.Json.Formatting.Indented);
+                File.WriteAllText(_filePath, json);
+                _logger.LogInformation("Saved data to file: {FilePath}", _filePath);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to save data to file: {FilePath}", _filePath);
+                throw;
+            }
         }
 
         /// <summary>
@@ -62,15 +84,25 @@ namespace Gds.Utilis.Json
         /// <param name="value">Il valore da impostare.</param>
         public void Set(string key, object value)
         {
-            if (_data.ContainsKey(key))
+            try
             {
-                _data[key] = value;
+                if (_data.ContainsKey(key))
+                {
+                    _data[key] = value;
+                    _logger.LogInformation("Updated value for key: {Key}", key);
+                }
+                else
+                {
+                    _data.Add(key, value);
+                    _logger.LogInformation("Added new key-value pair: {Key} - {Value}", key, value);
+                }
+                Save();
             }
-            else
+            catch (Exception ex)
             {
-                _data.Add(key, value);
+                _logger.LogError(ex, "Failed to set value for key: {Key}", key);
+                throw;
             }
-            Save();
         }
 
         /// <summary>
@@ -82,11 +114,20 @@ namespace Gds.Utilis.Json
         /// <exception cref="KeyNotFoundException">Generata se la chiave non esiste nell'archivio.</exception>
         public T Get<T>(string key)
         {
-            if (_data.TryGetValue(key, out object value))
+            try
             {
-                return (T)Convert.ChangeType(value, typeof(T));
+                if (_data.TryGetValue(key, out object value))
+                {
+                    _logger.LogInformation("Retrieved value for key: {Key}", key);
+                    return (T)Convert.ChangeType(value, typeof(T));
+                }
+                throw new KeyNotFoundException($"Key '{key}' not found in the JSON store.");
             }
-            throw new KeyNotFoundException($"Key '{key}' not found in the JSON store.");
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get value for key: {Key}", key);
+                throw;
+            }
         }
 
         /// <summary>
@@ -96,7 +137,17 @@ namespace Gds.Utilis.Json
         /// <returns>True se la chiave esiste, altrimenti False.</returns>
         public bool ContainsKey(string key)
         {
-            return _data.ContainsKey(key);
+            try
+            {
+                bool exists = _data.ContainsKey(key);
+                _logger.LogInformation("Checked existence of key: {Key} - Result: {Exists}", key, exists);
+                return exists;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to check existence of key: {Key}", key);
+                throw;
+            }
         }
 
         /// <summary>
@@ -105,10 +156,23 @@ namespace Gds.Utilis.Json
         /// <param name="key">La chiave da rimuovere.</param>
         public void Remove(string key)
         {
-            if (_data.ContainsKey(key))
+            try
             {
-                _data.Remove(key);
-                Save();
+                if (_data.ContainsKey(key))
+                {
+                    _data.Remove(key);
+                    Save();
+                    _logger.LogInformation("Removed key: {Key}", key);
+                }
+                else
+                {
+                    _logger.LogWarning("Key not found for removal: {Key}", key);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to remove key: {Key}", key);
+                throw;
             }
         }
 
@@ -117,8 +181,17 @@ namespace Gds.Utilis.Json
         /// </summary>
         public void Clear()
         {
-            _data.Clear();
-            Save();
+            try
+            {
+                _data.Clear();
+                Save();
+                _logger.LogInformation("Cleared all keys and values from the JSON store.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to clear all keys and values from the JSON store.");
+                throw;
+            }
         }
 
         /// <summary>
@@ -127,7 +200,16 @@ namespace Gds.Utilis.Json
         /// <returns>Un dizionario contenente tutte le chiavi e i valori.</returns>
         public Dictionary<string, object> GetAll()
         {
-            return new Dictionary<string, object>(_data);
+            try
+            {
+                _logger.LogInformation("Retrieved all keys and values from the JSON store.");
+                return new Dictionary<string, object>(_data);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to retrieve all keys and values from the JSON store.");
+                throw;
+            }
         }
     }
 }
